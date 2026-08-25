@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: slms-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-slms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-slms}
+      POSTGRES_DB: ${POSTGRES_DB:-slms}
+    ports:
+      - "5432:5432"
+    volumes:
+      - slms_postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: slms-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: slms-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+volumes:
+  slms_postgres_data:
